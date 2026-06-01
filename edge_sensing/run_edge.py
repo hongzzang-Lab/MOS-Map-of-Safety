@@ -6,11 +6,11 @@ from ultralytics import YOLO
 from shared_mem_manager import SharedMemoryWriter
 
 # =========================================================
-# [설정] 경로 및 환경
+# 경로 및 환경
 # =========================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 1. NCNN 모델 경로 (최적화 모델 우선)
+# 1. NCNN 모델 경로 
 NCNN_MODEL_DIR = os.path.join(BASE_DIR, "best_ncnn_model")
 PT_MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
 
@@ -19,7 +19,7 @@ def run_edge_inference():
     print("🚀 M.O.S Edge Sensing Module (Real Hardware)")
     print("=================================================")
 
-    # 1. 모델 로드 (NCNN > PT > Base)
+    # 1. 모델 로드
     model = None
     using_ncnn = False
     
@@ -41,11 +41,9 @@ def run_edge_inference():
     # 2. 통신 모듈 초기화
     writer = SharedMemoryWriter()
 
-    # 3. 실제 카메라 연결 (웹캠/CSI 카메라)
-    # 라즈베리 파이에서는 보통 0번 인덱스가 연결된 카메라입니다.
+    # 3. 실제 카메라 연결 
     cap = cv2.VideoCapture(0)
-    
-    # 카메라 연결 실패 시 즉시 종료 (하드웨어 문제 알림)
+
     if not cap.isOpened():
         print("❌ [Error] 카메라를 찾을 수 없습니다.")
         print("   >> 라즈베리 파이 카메라 연결 상태를 확인하세요.")
@@ -62,7 +60,6 @@ def run_edge_inference():
             break
 
         # 4. 추론 (Inference)
-        # 엣지에서는 추적만 수행, 무거운 후처리는 최소화
         results = model.track(frame, persist=True, verbose=False, imgsz=640, conf=0.4)
         
         # 5. 데이터 패킹 (서버 전송용 경량 데이터)
