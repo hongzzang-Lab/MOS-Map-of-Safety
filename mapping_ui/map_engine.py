@@ -5,16 +5,13 @@ import osmnx as ox
 from itertools import islice
 
 # =========================================================
-# [설정] 포터블(Portable) 경로 설정 (핵심 수정 사항)
-# =========================================================
-# 현재 이 파일(map_engine.py)이 있는 위치를 기준으로 경로를 잡습니다.
+# [설정] 포터블(Portable) 경로 설정 
+# ========================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 캐시 파일명 (같은 폴더 내에 저장/로드)
 CACHE_FILENAME = "routes_cache.json"
 CACHE_FILE = os.path.join(BASE_DIR, CACHE_FILENAME)
 
-# 기본 좌표 (건국대/서울 예시)
 DEFAULT_START = (37.5447285, 126.9716774)
 DEFAULT_END   = (37.5469626, 126.9756664)
 
@@ -41,7 +38,7 @@ def get_routes_from_osm(start, end):
         except Exception as e:
             print(f"⚠️ 캐시 읽기 실패 (새로 계산합니다): {e}")
 
-    # 2. OSMnx로 경로 계산 (인터넷 연결 필요)
+    # 2. OSMnx로 경로 계산
     print(f"📍 [OSM] 새 경로 계산 중... (Start -> End)")
     print(f"   ㄴ 위치: {CACHE_FILE} 에 저장됩니다.")
     
@@ -77,5 +74,3 @@ def get_routes_from_osm(start, end):
 if __name__ == "__main__":
     print(f"🔧 현재 실행 경로: {BASE_DIR}")
     print(f"📂 캐시 파일 경로: {CACHE_FILE}")
-    # routes = get_routes_from_osm(None, None)
-    # print(f"확인된 경로 수: {len(routes)}")
