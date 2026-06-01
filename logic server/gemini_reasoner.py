@@ -2,8 +2,8 @@ import google.generativeai as genai
 import json
 import math
 
-# [설정] API 키 (제출 시 빈칸으로 두거나, 환경 변수 사용 권장)
-# 심사위원이 실행할 때는 본인의 키를 넣어야 할 수도 있음
+# API 키 
+
 DEFAULT_API_KEY = ""
 
 class GeminiReasoner:
@@ -15,7 +15,7 @@ class GeminiReasoner:
     def _configure_model(self, api_key):
         try:
             genai.configure(api_key=api_key)
-            # 1순위: Flash Lite (빠름)
+  
             self.model = genai.GenerativeModel('gemini-1.5-flash') 
             print("✅ Gemini AI 모듈 로드 성공")
         except Exception as e:
