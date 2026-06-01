@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>M.O.S (Map Of Safety)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a036b672736109b3ef54dfe3af7a9386"></script>
+</head>
+<body>
+    <div id="screen-setup" class="screen active">
+        <div class="header">M.O.S (Map Of Safety)</div>
+        <div class="setup-container">
+            <div class="setup-card">
+                <h3>♿ 이용 기기 설정</h3>
+                <label><input type="radio" name="device" value="휠체어" checked> 🦽 휠체어</label>
+                <label style="margin-left:20px;"><input type="radio" name="device" value="실버카"> 🚶‍♂️ 실버카</label>
+                <br><br>
+                <input type="number" id="width-input" class="input-box" value="70" placeholder="기기 폭 (cm)">
+                <button class="btn btn-gemini" style="display:block; width:100%;" onclick="showScreen('screen-search')">다음</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-search" class="screen">
+        <div id="map-container">
+            <div id="map"></div>
+            <div class="nav-panel">
+                <input type="text" id="start-input" class="input-box" list="start-list" value="부안수협" placeholder="출발지">
+                <input type="text" id="end-input" class="input-box" list="end-list" value="소망을 찾는 이 지역 아동센터" placeholder="도착지">
+                <datalist id="start-list"><option value="부안수협"><option value="스턴하우스"><option value="인생아구찜"><option value="가든한밤"></datalist>
+                <datalist id="end-list"><option value="소망을 찾는 이 지역 아동센터"><option value="호식이 두마리치킨"></datalist>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" onclick="getAndDrawRoutes()">📍 추천 경로 보기</button>
+                    <button id="btn-check" class="btn btn-check" onclick="checkPassability()" disabled>🚧 통과 가능성 점검</button>
+                </div>
+                
+                <div id="check-result"></div>
+                <button id="btn-gemini-analysis" class="btn btn-gemini" onclick="askGemini()" style="margin-top:10px;">✨ Gemini 정밀 분석</button>
+                <div id="gemini-bubble"></div>
+                <button id="btn-start" class="btn btn-start" onclick="startNavigation()">🚀 안내 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-nav" class="screen">
+        <div id="nav-grid">
+            <div id="cam-area">
+                <div class="live-badge">🔴 LIVE DETECT</div>
+                <img id="cam-view" src="/video_feed">
+            </div>
+            <div id="right-panel">
+                <div id="nav-map"></div>
+                <div id="log-area">
+                    <h3 style="margin-top:0;">📋 실시간 장애물 로그</h3>
+                    <div id="log-content">탐지 대기 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LOCATION_DB = {
+            "부안수협": { lat: 37.5447285, lng: 126.9716774 },
+            "스턴하우스": { lat: 37.5454352, lng: 126.9726477 },
+            "인생아구찜": { lat: 37.5457209, lng: 126.9736883 },
+            "가든한밤": { lat: 37.5456222, lng: 126.9738435 },
+            "소망을 찾는 이 지역 아동센터": { lat: 37.5469626, lng: 126.9756664 },
+            "호식이 두마리치킨": { lat: 37.5471689, lng: 126.9755019 }
+        };
+        
+        let map, navMap, polylines = [], fetchedRoutes = [], selectedRouteIdx = 0;
+        let navInterval, myMarker;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'screen-search' && !map) {
+                setTimeout(() => {
+                    map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(37.5457, 126.9737), level: 3 });
+                }, 300);
+            }
+        }
+
+        function getAndDrawRoutes() {
+            let s = LOCATION_DB[document.getElementById('start-input').value];
+            let e = LOCATION_DB[document.getElementById('end-input').value];
+            if (!s || !e) return alert("장소를 목록에서 선택해주세요.");
+            polylines.forEach(p => p.setMap(null));
+            polylines = [];
+            
+            fetch('/api/get_routes', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ start: s, end: e }) })
+            .then(r=>r.json()).then(res => {
+                fetchedRoutes = res.routes;
+                if (!fetchedRoutes || fetchedRoutes.length === 0) return alert("경로를 찾을 수 없습니다.");
+                fetchedRoutes.forEach((route, i) => {
+                    let path = route.map(p => new kakao.maps.LatLng(p.lat, p.lng));
+                    let poly = new kakao.maps.Polyline({ path: path, strokeWeight: 8, strokeColor: i===0?'#0000FF':'#808080', strokeOpacity: 0.8 });
+                    poly.setMap(map);
+                    polylines.push(poly);
+                });
+                let bounds = new kakao.maps.LatLngBounds();
+                fetchedRoutes[0].forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
+                map.setBounds(bounds);
+                document.getElementById('btn-check').disabled = false;
+            });
+        }
+
+        function checkPassability() {
+            let btn = document.getElementById('btn-check');
+            btn.innerText = "점검 중...";
+            fetch('/api/check_passability').then(r => r.json()).then(res => {
+                btn.innerText = "🚧 통과 가능성 점검";
+                let resultBox = document.getElementById('check-result');
+                resultBox.style.display = 'block';
+                resultBox.innerText = res.msg;
+                resultBox.style.backgroundColor = res.status === 'warning' ? '#ffebee' : '#e8f5e9';
+                resultBox.style.color = res.status === 'warning' ? '#c62828' : '#2e7d32';
+                document.getElementById('btn-gemini-analysis').style.display = 'block';
+            });
+        }
+
+        function askGemini() {
+            let btn = document.getElementById('btn-gemini-analysis');
+            btn.innerText = "분석 중...";
+            fetch('/api/recommend', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ width: document.getElementById('width-input').value, device: document.querySelector('input[name="device"]:checked').value })
+            }).then(r=>r.json()).then(res => {
+                btn.innerText = "완료";
+                let bubble = document.getElementById('gemini-bubble');
+                bubble.style.display = 'block';
+                bubble.innerHTML = `<b>📊 분석:</b> ${res.gemini.analysis}<br><br><b>🤖 추천:</b> ${res.gemini.reason}`;
+                selectedRouteIdx = res.gemini.recommended_idx;
+                
+                // 선택된 경로 하이라이트
+                polylines.forEach(p => p.setMap(null));
+                let path = fetchedRoutes[selectedRouteIdx].map(p => new kakao.maps.LatLng(p.lat, p.lng));
+                let poly = new kakao.maps.Polyline({ path: path, strokeWeight: 10, strokeColor: '#00FF00', strokeOpacity: 1 });
+                poly.setMap(map);
+                polylines.push(poly);
+                
+                document.getElementById('btn-start').style.display = 'block';
+            });
+        }
+
+        function startNavigation() {
+            fetch('/api/start_nav', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ route: fetchedRoutes[selectedRouteIdx] }) });
+            showScreen('screen-nav');
+            setTimeout(() => {
+                navMap = new kakao.maps.Map(document.getElementById('nav-map'), { center: new kakao.maps.LatLng(37.5457, 126.9737), level: 2 });
+                let path = fetchedRoutes[selectedRouteIdx].map(p => new kakao.maps.LatLng(p.lat, p.lng));
+                let poly = new kakao.maps.Polyline({ path: path, strokeWeight: 8, strokeColor: '#00FF00', strokeOpacity: 0.8 });
+                poly.setMap(navMap);
+                myMarker = new kakao.maps.Marker({ map: navMap });
+                let bounds = new kakao.maps.LatLngBounds();
+                path.forEach(p => bounds.extend(p));
+                navMap.setBounds(bounds);
+            }, 300);
+            
+            navInterval = setInterval(() => {
+                fetch('/api/status').then(r=>r.json()).then(d => { 
+                    if (myMarker && navMap) { 
+                        let pos = new kakao.maps.LatLng(d.lat, d.lng); 
+                        myMarker.setPosition(pos); 
+                    } 
+                });
+                fetch('/api/obstacles').then(r=>r.json()).then(data => {
+                    let logHtml = "";
+                    data.reverse().forEach(o => { 
+                        logHtml += `<div style="border-bottom:1px solid #444; padding:5px;"><span style="color:#0f0">[${o.class}]</span> 거리: ${o.dist.toFixed(1)}m <span style="color:#aaa; font-size:12px;">(${new Date(o.last_seen*1000).toLocaleTimeString()})</span></div>`; 
+                    });
+                    document.getElementById('log-content').innerHTML = logHtml || "장애물 없음";
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>

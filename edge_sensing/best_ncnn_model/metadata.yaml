@@ -1,0 +1,30 @@
+description: Ultralytics YOLO11n-seg model trained on E:\파이썬 공학경진대회\YOLO_Safety_Dataset_Fast\data.yaml
+author: Ultralytics
+date: '2026-01-15T14:43:06.016803'
+version: 8.4.0
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: segment
+batch: 1
+imgsz:
+- 480
+- 480
+names:
+  0: bollard
+  1: truck
+  2: motorcycle
+  3: baricade
+  4: kickboard
+  5: Warning Block
+  6: car
+  7: drainage
+  8: manhole
+  9: standing banner
+  10: Leading Block
+  11: labacon
+  12: bicycle
+args:
+  batch: 1
+  half: false
+channels: 3

@@ -1,0 +1,24 @@
+# Web Framework & Server
+flask>=3.0.0
+
+# Computer Vision & Image Processing
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# AI & Deep Learning (YOLO)
+ultralytics>=8.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Edge Optimization (NCNN)
+ncnn>=1.0.0
+
+# Mapping & GIS
+osmnx>=1.9.0
+networkx>=3.0
+
+# Generative AI (LLM)
+google-generativeai>=0.3.0
+
+# Utilities
+requests>=2.31.0

@@ -1,0 +1,24 @@
+body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: #f0f2f5; }
+.screen { display: none; width: 100%; height: 100%; flex-direction: column; }
+.active { display: flex; }
+.header { padding: 15px; background: white; text-align: center; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+.setup-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+.setup-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+.input-box { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+#map-container { position: relative; width: 100%; height: 100%; }
+#map { width: 100%; height: 100%; }
+.nav-panel { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+.btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; width: 100%; font-size: 14px; transition: 0.2s; }
+.btn-primary { background: #4a4a4a; }
+.btn-check { background: #ff9800; color: white; }
+.btn-gemini { background: #007bff; display: none; }
+.btn-start { background: #28a745; display: none; }
+#check-result { display: none; padding: 10px; border-radius: 8px; font-size: 13px; margin-top: 5px; text-align: center; }
+#gemini-bubble { display: none; background: #e3f2fd; padding: 10px; border-radius: 8px; font-size: 13px; margin-top: 5px; }
+#nav-grid { display: grid; grid-template-columns: 50% 50%; height: 100%; }
+#cam-area { position: relative; background: black; border-right: 1px solid #333; }
+#cam-view { width: 100%; height: 100%; object-fit: contain; }
+#right-panel { display: grid; grid-template-rows: 60% 40%; height: 100%; }
+#nav-map { width: 100%; height: 100%; }
+#log-area { background: #222; color: white; padding: 15px; overflow-y: auto; font-size: 14px; border-top: 1px solid #444; }
+.live-badge { position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
