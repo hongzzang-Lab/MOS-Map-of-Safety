@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # M.O.S (Map Of Safety) - 프로젝트 README
 
 ##  프로젝트 개요
@@ -34,3 +35,6 @@ Project_Root/
 └── Data_Processing/           # [DataOps] 데이터셋 전처리 및 분석
     ├── data_analysis_processing.json # 클래스 불균형 분석 도구 + 전처리 
      
+=======
+# M.O.S-Map-of-Safety
+>>>>>>> 62e91f27744f01b73c0941846ac3b6e2bb208ad0
