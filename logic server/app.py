@@ -10,7 +10,6 @@ from ultralytics import YOLO
 # =========================================================
 # [설정] 경로 및 모듈 설정
 # =========================================================
-# 현재 파일 위치 기준 (온보딩 지원)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(ROOT_DIR)
@@ -24,11 +23,10 @@ from ipm_transform import IPMTransformer
 # ---------------------------------------------------------
 # [모델 경로 설정] NCNN 우선 순위
 # ---------------------------------------------------------
-# 1. NCNN 모델 폴더 (가장 빠름)
 NCNN_MODEL_DIR = os.path.join(BASE_DIR, "best_ncnn_model")
-# 2. PyTorch 모델 파일 (백업용)
+# PyTorch 모델 파일 (백업용)
 PT_MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
-# 3. IPM 행렬 파일
+# IPM 행렬 파일
 IPM_MATRIX_PATH = os.path.join(BASE_DIR, "ipm_matrix.npy")
 
 app = Flask(__name__, 
@@ -36,17 +34,17 @@ app = Flask(__name__,
             static_folder=os.path.join(ROOT_DIR, 'mapping_ui', 'static'))
 
 # =========================================================
-# [초기화] AI 및 알고리즘 엔진
+# [초기화] 
 # =========================================================
 print("🧠 [System] M.O.S Logic Server Initializing...")
 
-# 1. YOLO 모델 로드 (NCNN 우선)
+# 1. YOLO 모델 로드
 model = None
 using_ncnn = False
 try:
     if os.path.exists(NCNN_MODEL_DIR):
         print(f"⚡ [Optimization] NCNN 모델 로드: {NCNN_MODEL_DIR}")
-        # task='segment'를 명시해야 NCNN 포맷을 제대로 인식합니다.
+
         model = YOLO(NCNN_MODEL_DIR, task='segment')
         using_ncnn = True
     elif os.path.exists(PT_MODEL_PATH):
@@ -69,12 +67,11 @@ persistent_objects = []
 current_web_frame = None
 
 # =========================================================
-# [Vision Loop] NCNN 추론 + IPM 거리 계산
+# NCNN 추론 + IPM 거리 계산
 # =========================================================
 def vision_loop():
     global current_web_frame, persistent_objects
-    
-    # 웹캠 연결 (0번) - 실패 시 시뮬레이션 모드(동영상) 고려 가능
+   
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("❌ 웹캠 연결 실패. (카메라가 연결되어 있는지 확인하세요)")
@@ -89,7 +86,7 @@ def vision_loop():
             continue
             
         if model:
-            # 추론 (NCNN 사용 시 imgsz=640 권장)
+
             results = model.track(frame, persist=True, verbose=False, imgsz=640, conf=0.4)
             annotated_frame = results[0].plot()
             
@@ -107,7 +104,7 @@ def vision_loop():
                     # ---------------------------------------------------------
                     x1, y1, x2, y2 = box
                     cx = (x1 + x2) / 2
-                    cy = y2  # 발바닥(지면 접촉점) 좌표
+                    cy = y2  # 발바닥 좌표
                     
                     # 픽셀 -> cm 변환
                     real_x_cm, real_y_cm = ipm.pixel_to_world(cx, cy)
@@ -171,7 +168,6 @@ def api_check_passability():
 
 @app.route('/api/recommend', methods=['POST'])
 def api_recommend():
-    # [수정 완료] 문법 오류 해결 및 안전한 문자열 포맷팅 적용
     # 리스트 컴프리헨션을 먼저 수행하고 문자열로 합침
     obj_list = [f"{o['class']}({o['dist']}m)" for o in persistent_objects]
     summary = f"탐지 객체: {obj_list}"
