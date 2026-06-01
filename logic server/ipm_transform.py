@@ -6,7 +6,6 @@ class IPMTransformer:
     def __init__(self, matrix_path='ipm_matrix.npy'):
         """
         [Layer 2] 기하학적 분석을 위한 IPM 변환 클래스
-        - 보고서 참조: 3.2.3 거리 추정 알고리즘
         """
         self.matrix_path = matrix_path
         self.matrix = None
@@ -27,7 +26,7 @@ class IPMTransformer:
 
     def pixel_to_world(self, u, v):
         """
-        [핵심 알고리즘] 2D 픽셀 좌표 -> 3D 실측 거리 변환
+        [알고리즘] 2D 픽셀 좌표 -> 3D 실측 거리 변환
         :param u: 이미지 내 x좌표 (가로)
         :param v: 이미지 내 y좌표 (세로, 바닥 접점)
         :return: (real_x_cm, real_y_cm)
