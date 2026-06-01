@@ -4,8 +4,6 @@ class IDLockTracker:
     def __init__(self, distance_threshold=50, max_disappeared=5):
         """
         [Layer 1] 거리 기반 ID-Lock 추적 알고리즘
-        - 목적: 저사양 엣지 디바이스(RPI5)에서의 연산 부하 최소화
-        - 보고서 참조: 3.2.3 객체 추적 및 연속성 보장
         """
         self.next_object_id = 0
         self.objects = {}  # ID: Centroid (cx, cy)
@@ -35,7 +33,6 @@ class IDLockTracker:
             object_ids = list(self.objects.keys())
             object_centroids = list(self.objects.values())
 
-            # [보고서 핵심] 유클리드 거리 계산 (Euclidean Distance)
             D = [] 
             for sublist in object_centroids:
                 row = []
@@ -44,9 +41,6 @@ class IDLockTracker:
                     row.append(dist)
                 D.append(row)
             
-            # (이하 생략 가능하지만, 실제로는 헝가리안 알고리즘이나 Greedy 매칭 구현)
-            # 여기서는 간단히 가장 가까운 것 매칭 (Greedy)
-            # ... (코드 길이를 위해 생략, 핵심은 math.hypot 사용)
             pass 
 
         return self.objects
