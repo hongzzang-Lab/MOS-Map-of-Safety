@@ -1,20 +1,24 @@
+<div align="center">
 
+## 🗺️ MOS-Map-of-Safety
 
----
-## MOS-Map-of-Safety
-
-```md
 # M.O.S: Map of Safety
 
 교통약자와 보행자를 위한 실시간 위험 감지 기반 안전 경로 추천 시스템입니다.
 
-## Project Overview
+</div>
+
+---
+
+## 🧭 Project Overview
 
 M.O.S는 Map of Safety의 약자로, 보행자 또는 교통약자가 이동 중 마주칠 수 있는 위험 요소를 실시간으로 감지하고, 지도 기반으로 안전 경로를 추천하는 프로젝트입니다.
 
 본 프로젝트는 OSMnx 기반 도보 경로 계산, YOLO 기반 객체 탐지, IPM 기반 거리 추정, Gemini 기반 위험 분석, Flask 기반 웹 서버를 결합하여 안전한 이동 판단을 지원하는 것을 목표로 합니다.
 
-## Features
+---
+
+## ✨ Features
 
 - OSMnx 기반 도보 경로 계산
 - 경로 캐싱을 통한 반복 실행 최적화
@@ -26,7 +30,9 @@ M.O.S는 Map of Safety의 약자로, 보행자 또는 교통약자가 이동 중
 - Gemini 기반 위험 분석 및 경로 추천
 - 웹 UI 연동을 위한 API 제공
 
-## Tech Stack
+---
+
+## 🛠️ Tech Stack
 
 - Python
 - Flask
@@ -39,7 +45,9 @@ M.O.S는 Map of Safety의 약자로, 보행자 또는 교통약자가 이동 중
 - HTML / CSS / JavaScript
 - Jupyter Notebook
 
-## Directory Structure
+---
+
+## 📁 Directory Structure
 
 ```text
 MOS-Map-of-Safety/
@@ -65,3 +73,4 @@ MOS-Map-of-Safety/
 │
 ├─ requirement.txt
 └─ README.md
+```
