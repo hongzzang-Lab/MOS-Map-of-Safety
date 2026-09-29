@@ -18,6 +18,14 @@
 
 ---
 
+## 📷 Demo
+
+| 실버카 프로토타입 | 객체 탐지 · GPS 추적 | 경로 안전성 분석 |
+|:---:|:---:|:---:|
+| <img src="assets/mos-hardware.jpg" alt="실버카에 장착한 하드웨어 프로토타입" width="260" /> | <img src="assets/mos-perception-gps.jpg" alt="실시간 객체 탐지와 GPS 경로 추적 화면" width="260" /> | <img src="assets/mos-route-analysis.jpg" alt="위험 구간과 추천 경로를 표시한 화면" width="260" /> |
+
+---
+
 ## ✨ Features
 
 - OSMnx 기반 도보 경로 계산
